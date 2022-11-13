@@ -1,14 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:nftcommerce/globals.dart';
+import 'package:nftcommerce/main.dart';
 import 'package:nftcommerce/pages/myAccount.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
+import 'package:nftcommerce/pages/ownedNFT.dart';
+import 'package:nftcommerce/pages/shopPage.dart';
 
-class MainPage extends StatefulWidget {
+class MainPage extends riverpod.ConsumerStatefulWidget {
   const MainPage({super.key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends riverpod.ConsumerState<MainPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future(() {
+      ref.read(mainPageView.notifier).update((state) => ShopPage());
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,15 +37,28 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
               ListTile(
+                title: Text("SHOP"),
+                onTap: () {
+                  ref.read(mainPageView.notifier).update((state) => ShopPage());
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
                 title: Text("ACCOUNT"),
                 onTap: () {
-                  debugPrint("MY ACCOUNT");
+                  ref
+                      .read(mainPageView.notifier)
+                      .update((state) => MyAccountPage());
+                  Navigator.pop(context);
                 },
               ),
               ListTile(
                 title: Text("OWNED NFTS"),
                 onTap: () {
-                  debugPrint("MY NFTS");
+                  ref
+                      .read(mainPageView.notifier)
+                      .update((state) => OwnedPage());
+                  Navigator.pop(context);
                 },
               ),
               ListTile(
@@ -51,13 +78,6 @@ class _MainPageState extends State<MainPage> {
         appBar: AppBar(
           title: Text("Hello,Nume Prenume!"),
         ),
-        body: const MyAccountPage()
-
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: _incrementCounter,
-        //   tooltip: 'Increment',
-        //   child: const Icon(Icons.add),
-        // ),
-        );
+        body: ref.watch(mainPageView));
   }
 }
