@@ -10,8 +10,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController emailController = new TextEditingController();
-  TextEditingController passwordController = new TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  bool processingData = false;
+
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -51,6 +54,18 @@ class _LoginPageState extends State<LoginPage> {
                         border: OutlineInputBorder(),
                         labelText: 'Email',
                       ),
+                      validator: (text) {
+                        if (text == null || text.isEmpty)
+                          return 'Email cannot be empty';
+                        if (!RegExp(
+                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                            .hasMatch(text)) return "Email is invalid";
+
+                        return null;
+                      },
+                      onFieldSubmitted: (value) async {
+                        login();
+                      },
                     ),
                     SizedBox(
                       height: 10,
@@ -62,6 +77,17 @@ class _LoginPageState extends State<LoginPage> {
                         border: OutlineInputBorder(),
                         labelText: 'Password',
                       ),
+                      validator: (text) {
+                        if (text == null || text.isEmpty)
+                          return 'Password cannot be empty';
+                        if (text.length < 8)
+                          return "Password has to have atleast 8 characters!";
+
+                        return null;
+                      },
+                      onFieldSubmitted: (value) async {
+                        login();
+                      },
                     ),
                     SizedBox(
                       height: 10,
@@ -80,10 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                         Spacer(),
                         OutlinedButton(
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const MainPage()));
+                              login();
                             },
                             child: Text("LOGIN"))
                       ],
@@ -96,5 +119,23 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  void login() async {
+    processingData = true;
+    setState(() {});
+    // Validate returns true if the form is valid, or false otherwise.
+    if (true) {
+      //_formKey.currentState!.validate()
+
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const MainPage()));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Data is wrong')),
+      );
+    }
+    processingData = false;
+    setState(() {});
   }
 }

@@ -13,6 +13,9 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController repasswordController = TextEditingController();
   TextEditingController numeController = TextEditingController();
   TextEditingController prenumeController = TextEditingController();
+
+  bool processingData = false;
+
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -53,8 +56,58 @@ class _RegisterPageState extends State<RegisterPage> {
                             controller: numeController,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: 'Nume',
+                              labelText: 'First Name',
                             ),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "First Name cannot be empty!";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const Spacer(flex: 1),
+                        Expanded(
+                          flex: 10,
+                          child: TextFormField(
+                            controller: prenumeController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Last Name',
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Last Name cannot be empty!";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 10,
+                          child: TextFormField(
+                            controller: emailController,
+                            obscureText: false,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Email',
+                            ),
+                            validator: (text) {
+                              if (text == null || text.isEmpty)
+                                return 'Email cannot be empty';
+                              if (!RegExp(
+                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                  .hasMatch(text)) return "Email is invalid";
+
+                              return null;
+                            },
                           ),
                         ),
                         Spacer(flex: 1),
@@ -64,22 +117,20 @@ class _RegisterPageState extends State<RegisterPage> {
                             controller: prenumeController,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: 'Prenume',
+                              labelText: 'Phone',
                             ),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Phone cannot be empty!";
+                              }
+                              if (value.length < 10) {
+                                return "Phone is not valid!";
+                              }
+                              return null;
+                            },
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      controller: emailController,
-                      obscureText: false,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Email',
-                      ),
                     ),
                     const SizedBox(
                       height: 10,
@@ -95,6 +146,14 @@ class _RegisterPageState extends State<RegisterPage> {
                               border: OutlineInputBorder(),
                               labelText: 'Password',
                             ),
+                            validator: (text) {
+                              if (text == null || text.isEmpty)
+                                return 'Password cannot be empty';
+                              if (text.length < 8)
+                                return "Password has to have atleast 8 characters!";
+
+                              return null;
+                            },
                           ),
                         ),
                         Spacer(flex: 1),
@@ -107,6 +166,12 @@ class _RegisterPageState extends State<RegisterPage> {
                               border: OutlineInputBorder(),
                               labelText: 'Retype Password',
                             ),
+                            validator: (text) {
+                              if (text != passwordController.text)
+                                return 'Password is not the same!';
+
+                              return null;
+                            },
                           ),
                         ),
                       ],
@@ -118,10 +183,26 @@ class _RegisterPageState extends State<RegisterPage> {
                       children: [
                         Spacer(),
                         OutlinedButton(
-                            onPressed: () {
-                              debugPrint("REGISTER");
-                            },
-                            child: Text("Register")),
+                            onPressed: (processingData)
+                                ? null
+                                : () async {
+                                    // Validate returns true if the form is valid, or false otherwise.
+                                    if (_formKey.currentState!.validate()) {
+                                      // If the form is valid, display a snackbar. In the real world,
+                                      // you'd often call a server or save the information in a database.
+                                      processingData = true;
+                                      setState(() {});
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                            content: Text('Processing Data')),
+                                      );
+                                    }
+                                    processingData = false;
+
+                                    setState(() {});
+                                  },
+                            child: const Text("Register")),
                       ],
                     ),
                   ],

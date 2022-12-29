@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:nftcommerce/globals.dart';
-import 'package:nftcommerce/main.dart';
 import 'package:nftcommerce/pages/myAccount.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nftcommerce/pages/ownedNFT.dart';
 import 'package:nftcommerce/pages/shopPage.dart';
+import 'package:nftcommerce/globals.dart' as globals;
 
-class MainPage extends riverpod.ConsumerStatefulWidget {
+class MainPage extends ConsumerStatefulWidget {
   const MainPage({super.key});
 
   @override
-  _MainPageState createState() => _MainPageState();
+  ConsumerState<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends riverpod.ConsumerState<MainPage> {
+class _MainPageState extends ConsumerState<MainPage> {
   @override
   void initState() {
     super.initState();
 
     Future(() {
-      ref.read(mainPageView.notifier).update((state) => ShopPage());
+      ref.read(mainPageView.notifier).update((state) => const ShopPage());
     });
   }
 
@@ -37,37 +37,50 @@ class _MainPageState extends riverpod.ConsumerState<MainPage> {
                 ),
               ),
               ListTile(
-                title: Text("SHOP"),
-                onTap: () {
-                  ref.read(mainPageView.notifier).update((state) => ShopPage());
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: Text("ACCOUNT"),
+                title: const Text("SHOP"),
                 onTap: () {
                   ref
                       .read(mainPageView.notifier)
-                      .update((state) => MyAccountPage());
+                      .update((state) => const ShopPage());
                   Navigator.pop(context);
                 },
               ),
               ListTile(
-                title: Text("OWNED NFTS"),
+                title: const Text("ACCOUNT"),
                 onTap: () {
                   ref
                       .read(mainPageView.notifier)
-                      .update((state) => OwnedPage());
+                      .update((state) => const MyAccountPage());
                   Navigator.pop(context);
                 },
               ),
               ListTile(
-                leading: Icon(Icons.logout),
-                title: Text(
+                title: const Text("OWNED NFTS"),
+                onTap: () {
+                  ref
+                      .read(mainPageView.notifier)
+                      .update((state) => const OwnedPage());
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text(
                   "LOGOUT",
                   style: TextStyle(color: Colors.red),
                 ),
                 onTap: () {
+                  globals.firstName = '';
+                  globals.lastName = '';
+                  globals.idCont = '';
+
+                  globals.date = '';
+                  globals.telefon = '';
+                  globals.email = '';
+                  globals.wallet = {};
+                  globals.ownedNfts = [];
+                  globals.nfts = [];
+                  setState(() {});
                   Navigator.pop(context);
                   Navigator.pop(context);
                 },
@@ -76,7 +89,7 @@ class _MainPageState extends riverpod.ConsumerState<MainPage> {
           ),
         ),
         appBar: AppBar(
-          title: Text("Hello,Nume Prenume!"),
+          title: Text("Hello,${globals.firstName} ${globals.lastName}!"),
         ),
         body: ref.watch(mainPageView));
   }
