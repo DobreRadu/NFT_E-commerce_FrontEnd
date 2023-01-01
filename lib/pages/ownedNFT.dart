@@ -13,60 +13,62 @@ class _ShopPageState extends State<OwnedPage> {
     width: 20,
     height: 20,
   );
+
   @override
   Widget build(BuildContext context) {
     double widthContext = MediaQuery.of(context).size.width;
     double heightContext = MediaQuery.of(context).size.height;
-    return Scaffold(
-      body: GridView.count(
-        crossAxisCount: (widthContext > 1200)
-            ? 4
-            : (widthContext > 900)
-                ? 3
-                : (widthContext > 600)
-                    ? 2
-                    : 1,
-        // Generate 100 widgets that display their index in the List.
-        children: List.generate(globals.ownedNfts.length, (index) {
-          var nft = globals.findNftById(globals.ownedNfts[index]);
+    return (globals.ownedNfts.isEmpty)
+        ? const Center(child: Text("YOU OWN NOTHING\nLETS GO BY SOME"))
+        : Scaffold(
+            body: GridView.count(
+              crossAxisCount: (widthContext > 1200)
+                  ? 4
+                  : (widthContext > 900)
+                      ? 3
+                      : (widthContext > 600)
+                          ? 2
+                          : 1,
+              children: List.generate(globals.ownedNfts.length, (index) {
+                var nft = globals.findNftById(globals.ownedNfts[index]);
 
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(children: [
-                  Image.asset(
-                    'assets/nftLogo.png',
-                    alignment: Alignment.center,
-                    width: 400,
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(children: [
+                        Image.asset(
+                          'assets/nftLogo.png',
+                          alignment: Alignment.center,
+                          width: 400,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          "PRICE:${index * 1000.454}",
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        OutlinedButton(
+                          child: const Text("SHOW MORE"),
+                          onPressed: () {
+                            showMore(index);
+                          },
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ]),
+                    ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    "PRICE:${index * 1000.454}",
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  OutlinedButton(
-                    child: const Text("SHOW MORE"),
-                    onPressed: () {
-                      showMore(index);
-                    },
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                ]),
-              ),
+                );
+              }),
             ),
           );
-        }),
-      ),
-    );
   }
 
   void showMore(dynamic nft) {

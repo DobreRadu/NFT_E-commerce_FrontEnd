@@ -100,33 +100,14 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                                                 fontWeight: FontWeight.bold),
                                           ),
                                           spacer20,
-                                          OutlinedButton(
-                                              onPressed: (ref
-                                                      .watch(globals.buyingNFT))
-                                                  ? null
-                                                  : (nftOwned(index.toString()))
-                                                      ? null
-                                                      : () {
-                                                          buyNFT(
-                                                              index.toString());
-                                                        },
-                                              child: (nftOwned(
-                                                      index.toString()))
-                                                  ? Wrap(
-                                                      alignment:
-                                                          WrapAlignment.center,
-                                                      crossAxisAlignment:
-                                                          WrapCrossAlignment
-                                                              .center,
-                                                      children: const [
-                                                        Icon(
-                                                          Icons.check,
-                                                          color: Colors.green,
-                                                        ),
-                                                        Text("OWNED"),
-                                                      ],
-                                                    )
-                                                  : const Text("BUY"))
+                                          const Text("HISTORY:",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 30)),
+                                          const Divider(),
+                                          ...List.generate(index, ((index) {
+                                            return Text('Hello $index');
+                                          })),
                                         ],
                                       ),
                                     ),

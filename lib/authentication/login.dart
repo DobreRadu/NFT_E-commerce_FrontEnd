@@ -122,11 +122,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void login() async {
-    processingData = true;
-    setState(() {});
     // Validate returns true if the form is valid, or false otherwise.
     if (true) {
       //_formKey.currentState!.validate()
+      processingData = true;
+      setState(() {});
 
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const MainPage()));
