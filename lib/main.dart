@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nftcommerce/authentication/register.dart';
+import 'package:nftcommerce/pages/shopPage.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 import 'authentication/login.dart';
@@ -16,11 +18,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const LoginPage(),
+        '/register': (context) => const RegisterPage(),
+      },
       title: 'NFT_COMMERCE',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginPage(),
     );
   }
 }

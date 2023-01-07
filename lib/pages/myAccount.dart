@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:nftcommerce/globals.dart' as globals;
+import 'package:nftcommerce/pages/addMoney.dart';
 
 class MyAccountPage extends StatefulWidget {
   const MyAccountPage({super.key});
@@ -62,7 +63,12 @@ class _MyAccountPageState extends State<MyAccountPage> {
                     space,
                     OutlinedButton(
                       child: const Text("ADD MONEY"),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AddMoneyPage()));
+                      },
                     )
                   ],
                 ),

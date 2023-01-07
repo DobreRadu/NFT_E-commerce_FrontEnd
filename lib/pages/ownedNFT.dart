@@ -14,6 +14,16 @@ class _ShopPageState extends State<OwnedPage> {
     height: 20,
   );
 
+  TextEditingController pretController = TextEditingController();
+
+  String dropdownvalue = "BITCOIN";
+
+  var items = [
+    'BITCOIN',
+    'RON',
+    'EUR',
+  ];
+
   @override
   Widget build(BuildContext context) {
     double widthContext = MediaQuery.of(context).size.width;
@@ -22,13 +32,11 @@ class _ShopPageState extends State<OwnedPage> {
         ? const Center(child: Text("YOU OWN NOTHING\nLETS GO BY SOME"))
         : Scaffold(
             body: GridView.count(
-              crossAxisCount: (widthContext > 1200)
-                  ? 4
-                  : (widthContext > 900)
-                      ? 3
-                      : (widthContext > 600)
-                          ? 2
-                          : 1,
+              crossAxisCount: (widthContext > 1400)
+                  ? 3
+                  : (widthContext > 1000)
+                      ? 2
+                      : 1,
               children: List.generate(globals.ownedNfts.length, (index) {
                 var nft = globals.findNftById(globals.ownedNfts[index]);
 
@@ -61,6 +69,49 @@ class _ShopPageState extends State<OwnedPage> {
                         ),
                         const SizedBox(
                           height: 20,
+                        ),
+                        DropdownButton(
+                          // Initial Value
+                          value: dropdownvalue,
+
+                          // Down Arrow Icon
+                          icon: const Icon(Icons.money),
+
+                          // Array list of items
+                          items: items.map((String items) {
+                            return DropdownMenuItem(
+                              value: items,
+                              child: Text(items),
+                            );
+                          }).toList(),
+                          // After selecting the desired option,it will
+                          // change button value to selected value
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              dropdownvalue = newValue!;
+                            });
+                          },
+                        ),
+                        spacer20,
+                        TextFormField(
+                          controller: pretController,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Price',
+                          ),
+                          validator: (text) {
+                            if (text == null || text.isEmpty)
+                              return 'Price cannot be empty';
+
+                            return null;
+                          },
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        OutlinedButton(
+                          child: const Text("SELL"),
+                          onPressed: () {},
                         ),
                       ]),
                     ),
