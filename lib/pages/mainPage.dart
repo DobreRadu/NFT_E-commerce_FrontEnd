@@ -75,7 +75,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                   globals.idCont = '';
 
                   globals.date = '';
-                  globals.telefon = '';
+                  globals.phone = '';
                   globals.email = '';
                   globals.wallet = {};
                   globals.ownedNfts = [];

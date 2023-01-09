@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:nftcommerce/authentication/register.dart';
 import 'package:nftcommerce/pages/mainPage.dart';
+
+import 'package:nftcommerce/globals.dart' as globals;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -123,13 +128,104 @@ class _LoginPageState extends State<LoginPage> {
 
   void login() async {
     // Validate returns true if the form is valid, or false otherwise.
-    if (true) {
-      //_formKey.currentState!.validate()
+    if (_formKey.currentState!.validate()) {
       processingData = true;
       setState(() {});
 
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const MainPage()));
+      var userData = {};
+      try {
+//LOGIN===================
+        http.Response loginData = await http.post(
+          Uri.https(globals.domain, "/account/login"),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode({
+            "email": emailController.text,
+            "password": passwordController.text
+          }),
+        );
+
+        print(loginData.body);
+        userData = jsonDecode(loginData.body);
+
+        // LOGIN===================
+
+      } catch (error) {
+        debugPrint("LOGIN/GET NFTS");
+        debugPrint(error.toString());
+        dialog("An error occured,please try again later!");
+        processingData = false;
+        setState(() {});
+      }
+
+      if (userData['errors']?.isNotEmpty) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Center(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 241, 241, 241),
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+                  width: 500,
+                  height: 600,
+                  child: Center(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const Text(
+                            "The following errors arosed:",
+                            style: TextStyle(
+                              fontSize: 14,
+                            ),
+                          ),
+                          ...List.generate(userData['errors'].length, (index) {
+                            return Text("- ${userData['errors'][index]}",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.red,
+                                ));
+                          })
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            });
+      } else {
+        globals.setAccount(userData);
+
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const MainPage()));
+
+        try {
+          //GET NFTS====================
+          http.Response getNFTS = await http.post(
+            Uri.https(globals.domain, "/product/getList"),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode({}),
+          );
+
+          globals.nfts = jsonDecode(getNFTS.body);
+          if (globals.nfts.isNotEmpty) {
+            print(globals.nfts
+                .first); //{id: 5, name: dog, collection: animals, description: null, historyList: [], currency: eur, price: 50, picture:
+          }
+
+          //GET NFTS====================
+        } catch (error) {
+          debugPrint("LOGIN/GET NFTS");
+          debugPrint(error.toString());
+          dialog("An error occured,please try again later!");
+          processingData = false;
+          setState(() {});
+        }
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Data is wrong')),
@@ -137,5 +233,36 @@ class _LoginPageState extends State<LoginPage> {
     }
     processingData = false;
     setState(() {});
+  }
+
+  void dialog(String textDialog) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Center(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 241, 241, 241),
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
+              width: 500,
+              height: 600,
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Text(
+                        textDialog,
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
   }
 }

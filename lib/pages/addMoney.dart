@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:nftcommerce/globals.dart' as globals;
+import 'package:http/http.dart' as http;
 
 class AddMoneyPage extends StatefulWidget {
   const AddMoneyPage({super.key});
@@ -19,10 +24,16 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
   TextEditingController ccvController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController expDateController = TextEditingController();
+  TextEditingController ammountController = TextEditingController();
+
+  List<String> currency = ['eur', 'bitcoin,ron'];
+  int indexCurrency = 0;
 
   final _formKey = GlobalKey<FormState>();
 
   bool processingData = false;
+
+  bool poor = false;
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +52,16 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
-                      "Add Money Here",
+                      "Insert Card Details",
                       style:
                           TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                     ),
+                    if (!poor)
+                      Image.asset(
+                        "assets/money.gif",
+                        height: 300,
+                        width: 300,
+                      ),
                     Divider(),
                     TextFormField(
                       controller: cardNumberController,
@@ -88,7 +105,7 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
                           flex: 10,
                           child: TextFormField(
                             controller: ccvController,
-                            obscureText: false,
+                            obscureText: true,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'CCV',
@@ -123,18 +140,64 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
                             onFieldSubmitted: (value) async {
                               addMoney();
                             },
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9]|/')),
+                            ],
                           ),
                         )
                       ],
                     ),
                     space,
-                    OutlinedButton(
-                        onPressed: processingData
-                            ? null
-                            : () {
-                                addMoney();
-                              },
-                        child: const Text("Add Money"))
+                    TextFormField(
+                      controller: ammountController,
+                      obscureText: false,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Ammount',
+                      ),
+                      validator: (text) {
+                        if (text == null || text.isEmpty)
+                          return 'Ammount cannot be empty';
+
+                        return null;
+                      },
+                      onFieldSubmitted: (value) async {
+                        addMoney();
+                      },
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
+                    ),
+                    space,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        OutlinedButton(
+                            onPressed: processingData
+                                ? null
+                                : () {
+                                    addMoney();
+                                  },
+                            child: const Text("Add Money")),
+                        space,
+                        if (poor)
+                          // const Text(
+                          //   'You poor, go get some money...lol...',
+                          //   style: TextStyle(
+                          //       color: Colors.red,
+                          //       fontWeight: FontWeight.bold,
+                          //       fontSize: 30),
+                          // )
+                          Image.asset(
+                            "assets/poor.gif",
+                            height: 300,
+                            width: 300,
+                          ),
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -145,10 +208,35 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
     );
   }
 
-  void addMoney() {
+  void addMoney() async {
     if (_formKey.currentState!.validate()) {
       processingData = true;
       setState(() {});
+
+      //ADD FUNDS===================
+      if (Random().nextBool()) {
+        try {
+          http.Response buyData = await http.post(
+            Uri.https(globals.domain, "/account/addFunds"),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode({
+              "id_user": globals.idCont,
+              "currency": currency[indexCurrency],
+              "price": int.parse(ammountController.text)
+            }),
+          );
+
+          print(buyData.body);
+        } catch (error) {
+          debugPrint(error.toString());
+        }
+        //ADD FUNDS===================
+      } else {
+        poor = true;
+        setState(() {});
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Data is wrong')),

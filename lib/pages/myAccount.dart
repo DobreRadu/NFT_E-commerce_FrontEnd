@@ -44,7 +44,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
                 ),
                 space,
                 Text(
-                  "PHONE: ${globals.telefon}",
+                  "PHONE: ${globals.phone}",
                   style: const TextStyle(
                       fontStyle: FontStyle.italic, fontSize: 20),
                 ),

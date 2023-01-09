@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nftcommerce/globals.dart' as globals;
+
+import 'package:http/http.dart' as http;
 
 class ShopPage extends ConsumerStatefulWidget {
   const ShopPage({super.key});
@@ -32,17 +36,22 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                     ? 2
                     : 1,
         // Generate 100 widgets that display their index in the List.
-        children: List.generate(100, (index) {
+        children: List.generate(globals.nfts.length, (index) {
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(children: [
-                  Image.asset(
-                    'assets/nftLogo.png',
-                    alignment: Alignment.center,
+                  // Image.asset(
+                  //   'assets/nftLogo.png',
+                  //   alignment: Alignment.center,
+                  //
+                  // ),
+                  Image.memory(
+                    base64Decode(globals.nfts[index]['picture']),
                     width: 400,
+                    height: 400,
                   ),
                   const SizedBox(
                     height: 20,
@@ -158,10 +167,20 @@ class _ShopPageState extends ConsumerState<ShopPage> {
     return false;
   }
 
-  void buyNFT(String id) async {
+  void buyNFT(String id_nft) async {
     ref.read(globals.buyingNFT.notifier).update(((state) => true));
-    await Future.delayed(Duration(seconds: 2));
-    debugPrint("Bought!");
+
+    //BUY NFT===================
+    http.Response buyData = await http.post(
+      Uri.https(globals.domain, "/product/buy"),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({"id_user": globals.idCont, "id_nft": id_nft}),
+    );
+
+    print(buyData.body);
+    //BUY NFT===================
 
     ref.read(globals.buyingNFT.notifier).update(((state) => false));
   }

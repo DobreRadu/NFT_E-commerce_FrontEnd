@@ -1,4 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import 'package:http/http.dart' as http;
+import 'package:nftcommerce/globals.dart' as globals;
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -9,6 +15,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   TextEditingController emailController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController repasswordController = TextEditingController();
   TextEditingController numeController = TextEditingController();
@@ -114,18 +121,22 @@ class _RegisterPageState extends State<RegisterPage> {
                         Expanded(
                           flex: 10,
                           child: TextFormField(
-                            controller: prenumeController,
+                            controller: phoneController,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Phone',
                             ),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
                             validator: (value) {
-                              if (value!.isEmpty) {
-                                return "Phone cannot be empty!";
-                              }
-                              if (value.length < 10) {
-                                return "Phone is not valid!";
-                              }
+                              // if (value!.isEmpty) {
+                              //   return "Phone cannot be empty!";
+                              // }
+                              // if (value.length < 10) {
+                              //   return "Phone is not valid!";
+                              // }
                               return null;
                             },
                           ),
@@ -197,6 +208,32 @@ class _RegisterPageState extends State<RegisterPage> {
                                         const SnackBar(
                                             content: Text('Processing Data')),
                                       );
+
+                                      try {
+//REGISTER===================
+                                        http.Response registerData =
+                                            await http.post(
+                                          Uri.https(globals.domain,
+                                              "/account/register"),
+                                          headers: {
+                                            'Content-Type':
+                                                'application/json; charset=UTF-8',
+                                          },
+                                          body: jsonEncode({
+                                            "email": emailController.text,
+                                            "password": passwordController.text,
+                                            "firstname": prenumeController.text,
+                                            "lastname": numeController.text,
+                                            "phone": phoneController.text
+                                          }),
+                                        );
+
+                                        print(registerData.statusCode);
+                                        print(registerData.body);
+                                        //REGISTER===================
+                                      } catch (error) {
+                                        debugPrint(error.toString());
+                                      }
                                     }
                                     processingData = false;
 
