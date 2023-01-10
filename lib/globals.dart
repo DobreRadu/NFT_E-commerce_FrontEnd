@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod/riverpod.dart';
 
 const String domain = "artisimum.azurewebsites.net";
@@ -11,16 +12,18 @@ String date = '';
 String phone = '';
 String email = '';
 dynamic wallet = {};
-List<dynamic> ownedNfts = [];
-List<dynamic> nfts = [];
+
+final nfts = StateProvider<List<dynamic>>((ref) => []);
+
+final ownedNfts = StateProvider<List<dynamic>>((ref) => []);
 
 final mainPageView =
     StateProvider<Widget>((ref) => const Center(child: Text("LOADING...")));
 
 final buyingNFT = StateProvider<bool>((ref) => false);
 
-dynamic findNftById(String id) {
-  for (var nft in nfts) {
+dynamic findNftById(String id, WidgetRef ref) {
+  for (var nft in ref.read(nfts)) {
     if (nft['id'] == id) {
       return nft;
     }
@@ -28,7 +31,7 @@ dynamic findNftById(String id) {
   return {};
 }
 
-void setAccount(dynamic account) {
+void setAccount(dynamic account, WidgetRef ref) {
   firstName = account['firstname'] ?? "";
   lastName = account['lastname'] ?? "";
   idCont = account['id'] ?? "";
@@ -42,5 +45,5 @@ void setAccount(dynamic account) {
         double.parse(wallet[wallet.keys.toList()[i]]);
   }
 
-  ownedNfts = account['nfts'] ?? "";
+  ref.read(ownedNfts.notifier).update((state) => account['nfts'] ?? "");
 }

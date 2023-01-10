@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -7,14 +8,14 @@ import 'package:nftcommerce/pages/mainPage.dart';
 
 import 'package:nftcommerce/globals.dart' as globals;
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -69,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       },
                       onFieldSubmitted: (value) async {
-                        login();
+                        login(ref);
                       },
                     ),
                     SizedBox(
@@ -91,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       },
                       onFieldSubmitted: (value) async {
-                        login();
+                        login(ref);
                       },
                     ),
                     SizedBox(
@@ -111,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                         Spacer(),
                         OutlinedButton(
                             onPressed: () {
-                              login();
+                              login(ref);
                             },
                             child: Text("LOGIN"))
                       ],
@@ -126,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void login() async {
+  void login(WidgetRef ref) async {
     // Validate returns true if the form is valid, or false otherwise.
     if (_formKey.currentState!.validate()) {
       processingData = true;
@@ -196,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
               );
             });
       } else {
-        globals.setAccount(userData);
+        globals.setAccount(userData, ref);
 
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const MainPage()));
@@ -211,11 +212,9 @@ class _LoginPageState extends State<LoginPage> {
             body: jsonEncode({}),
           );
 
-          globals.nfts = jsonDecode(getNFTS.body);
-          if (globals.nfts.isNotEmpty) {
-            print(globals.nfts
-                .first); //{id: 5, name: dog, collection: animals, description: null, historyList: [], currency: eur, price: 50, picture:
-          }
+          ref
+              .read(globals.nfts.notifier)
+              .update((state) => jsonDecode(getNFTS.body));
 
           //GET NFTS====================
         } catch (error) {

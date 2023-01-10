@@ -36,29 +36,41 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                     ? 2
                     : 1,
         // Generate 100 widgets that display their index in the List.
-        children: List.generate(globals.nfts.length, (index) {
+        children: List.generate(ref.watch(globals.nfts).length, (index) {
+          if (!ref.read(globals.nfts)[index]['visible']) return Text('');
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(children: [
+                  // //{id: 5, name: dog, collection: animals, description: null, historyList: [], currency: eur, price: 50, picture:
+
+                  //visible
+
                   // Image.asset(
                   //   'assets/nftLogo.png',
                   //   alignment: Alignment.center,
                   //
                   // ),
-                  Image.memory(
-                    base64Decode(globals.nfts[index]['picture']),
-                    width: 400,
-                    height: 400,
-                  ),
+                  // SizedBox(
+                  //   width: 300,
+                  //   height: 300,
+                  //   child: Image.memory(
+                  //     base64Decode(ref.read(globals.nfts)[index]['picture']),
+                  //   ),
+                  // ),
                   const SizedBox(
                     height: 20,
                   ),
-                  Text("OWNER:$index NUME NUME"),
                   Text(
-                    "PRICE:${index * 1000.454}",
+                      "COLLECTION:${ref.read(globals.nfts)[index]['collection']}"),
+                  Text("NFT NAME:${ref.read(globals.nfts)[index]['name']}"),
+                  Text(
+                      "DESCRIPTION:${ref.read(globals.nfts)[index]['description']}"),
+                  Text("OWNER:$index"),
+                  Text(
+                    "PRICE:${ref.read(globals.nfts)[index]['currency']} ${ref.read(globals.nfts)[index]['price']}",
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(
@@ -160,7 +172,7 @@ class _ShopPageState extends ConsumerState<ShopPage> {
   }
 
   bool nftOwned(String id) {
-    for (var idNFT in globals.ownedNfts) {
+    for (var idNFT in ref.read(globals.ownedNfts)) {
       if (id == idNFT) return true;
     }
 

@@ -78,8 +78,8 @@ class _MainPageState extends ConsumerState<MainPage> {
                   globals.phone = '';
                   globals.email = '';
                   globals.wallet = {};
-                  globals.ownedNfts = [];
-                  globals.nfts = [];
+                  ref.read(globals.ownedNfts.notifier).update((state) => []);
+                  ref.read(globals.nfts.notifier).update((state) => []);
                   setState(() {});
                   Navigator.pop(context);
                   Navigator.pop(context);

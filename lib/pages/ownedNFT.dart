@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nftcommerce/globals.dart' as globals;
 
-class OwnedPage extends StatefulWidget {
+class OwnedPage extends ConsumerStatefulWidget {
   const OwnedPage({super.key});
 
   @override
-  State<OwnedPage> createState() => _ShopPageState();
+  ConsumerState<OwnedPage> createState() => _ShopPageState();
 }
 
-class _ShopPageState extends State<OwnedPage> {
+class _ShopPageState extends ConsumerState<OwnedPage> {
   final Widget spacer20 = const SizedBox(
     width: 20,
     height: 20,
@@ -28,7 +29,7 @@ class _ShopPageState extends State<OwnedPage> {
   Widget build(BuildContext context) {
     double widthContext = MediaQuery.of(context).size.width;
     double heightContext = MediaQuery.of(context).size.height;
-    return (globals.ownedNfts.isEmpty)
+    return (ref.read(globals.ownedNfts).isEmpty)
         ? const Center(child: Text("YOU OWN NOTHING\nLETS GO BY SOME"))
         : Scaffold(
             body: GridView.count(
@@ -37,8 +38,10 @@ class _ShopPageState extends State<OwnedPage> {
                   : (widthContext > 1000)
                       ? 2
                       : 1,
-              children: List.generate(globals.ownedNfts.length, (index) {
-                var nft = globals.findNftById(globals.ownedNfts[index]);
+              children:
+                  List.generate(ref.watch(globals.ownedNfts).length, (index) {
+                var nft = globals.findNftById(
+                    ref.read(globals.ownedNfts)[index], ref);
 
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
