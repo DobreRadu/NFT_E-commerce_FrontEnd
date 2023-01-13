@@ -26,6 +26,7 @@ class _ShopPageState extends ConsumerState<ShopPage> {
 
     return Scaffold(
       body: GridView.count(
+        childAspectRatio: 0.7,
         // Create a grid with 2 columns. If you change the scrollDirection to
         // horizontal, this produces 2 rows.
         crossAxisCount: (widthContext > 1200)
@@ -44,22 +45,13 @@ class _ShopPageState extends ConsumerState<ShopPage> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(children: [
-                  // //{id: 5, name: dog, collection: animals, description: null, historyList: [], currency: eur, price: 50, picture:
-
-                  //visible
-
-                  // Image.asset(
-                  //   'assets/nftLogo.png',
-                  //   alignment: Alignment.center,
-                  //
-                  // ),
-                  // SizedBox(
-                  //   width: 300,
-                  //   height: 300,
-                  //   child: Image.memory(
-                  //     base64Decode(ref.read(globals.nfts)[index]['picture']),
-                  //   ),
-                  // ),
+                  Container(
+                    width: 200,
+                    height: 200,
+                    child: Image.memory(
+                      base64Decode(ref.read(globals.nfts)[index]['picture']),
+                    ),
+                  ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -95,9 +87,32 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                                     child: SingleChildScrollView(
                                       child: Column(
                                         children: [
-                                          Image.asset(
-                                            'assets/nftLogo.png',
-                                            alignment: Alignment.center,
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Image.memory(
+                                              base64Decode(
+                                                  ref.read(globals.nfts)[index]
+                                                      ['picture']),
+                                            ),
+                                          ),
+                                          spacer20,
+                                          Text(
+                                            "NFT NAME:${ref.read(globals.nfts)[index]['name']}",
+                                            style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            "COLLECTION:${ref.read(globals.nfts)[index]['collection']}",
+                                            style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            "DESCRIPTION:${ref.read(globals.nfts)[index]['description']}",
+                                            style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
                                           ),
                                           spacer20,
                                           Text(
@@ -108,14 +123,8 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                                           ),
                                           spacer20,
                                           Text(
-                                            "PRICE:${index}",
-                                            style: const TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          spacer20,
-                                          Text(
-                                            "Created:${index}",
+                                            "PRICE:${ref.read(globals.nfts)[index]['currency']} ${ref.read(globals.nfts)[index]['price']}",
+                                            overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.bold),
@@ -192,8 +201,80 @@ class _ShopPageState extends ConsumerState<ShopPage> {
     );
 
     print(buyData.body);
+    var buyDataJson = jsonDecode(buyData.body);
+
+    if (buyDataJson['errors']?.isNotEmpty) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Center(
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 241, 241, 241),
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+                width: 500,
+                height: 600,
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const Text(
+                          "The following errors arosed:",
+                          style: TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                        ...List.generate(buyDataJson['errors'].length, (index) {
+                          return Text("- ${buyDataJson['errors'][index]}",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.red,
+                              ));
+                        })
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          });
+    } else {
+      dialog("PRUCHASE COMPLETE!");
+    }
     //BUY NFT===================
 
     ref.read(globals.buyingNFT.notifier).update(((state) => false));
+  }
+
+  void dialog(String textDialog) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Center(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 241, 241, 241),
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
+              width: 500,
+              height: 600,
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Text(
+                        textDialog,
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
   }
 }

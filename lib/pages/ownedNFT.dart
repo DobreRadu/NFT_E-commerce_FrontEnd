@@ -1,3 +1,8 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nftcommerce/globals.dart' as globals;
@@ -17,13 +22,8 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
 
   TextEditingController pretController = TextEditingController();
 
-  String dropdownvalue = "BITCOIN";
-
-  var items = [
-    'BITCOIN',
-    'RON',
-    'EUR',
-  ];
+  List<String> currency = ['eur', 'bitcoin', 'ron'];
+  String currentCurrency = 'eur';
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +33,7 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
         ? const Center(child: Text("YOU OWN NOTHING\nLETS GO BY SOME"))
         : Scaffold(
             body: GridView.count(
+              childAspectRatio: 0.6,
               crossAxisCount: (widthContext > 1400)
                   ? 3
                   : (widthContext > 1000)
@@ -49,52 +50,131 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(children: [
-                        Image.asset(
-                          'assets/nftLogo.png',
-                          alignment: Alignment.center,
-                          width: 400,
+                        Container(
+                          width: 200,
+                          height: 200,
+                          child: Image.memory(
+                            base64Decode(nft['picture']),
+                          ),
                         ),
                         const SizedBox(
                           height: 20,
                         ),
+                        Text("COLLECTION:${nft['collection']}"),
+                        Text("NFT NAME:${nft['name']}"),
+                        Text("DESCRIPTION:${nft['description']}"),
+                        Text("OWNER:$index"),
                         Text(
-                          "PRICE:${index * 1000.454}",
+                          "PRICE:${nft['currency']} ${nft['price']}",
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(
                           height: 20,
                         ),
                         OutlinedButton(
-                          child: const Text("SHOW MORE"),
-                          onPressed: () {
-                            showMore(index);
-                          },
-                        ),
+                            onPressed: () {
+                              debugPrint("SHOW MORE SHOPPAGE");
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Center(
+                                      child: Container(
+                                        decoration: const BoxDecoration(
+                                          color: Color.fromARGB(
+                                              255, 241, 241, 241),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20)),
+                                        ),
+                                        width: 500,
+                                        height: 600,
+                                        child: Center(
+                                          child: SingleChildScrollView(
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Image.memory(
+                                                    base64Decode(ref.read(
+                                                            globals.nfts)[index]
+                                                        ['picture']),
+                                                  ),
+                                                ),
+                                                spacer20,
+                                                Text(
+                                                  "NFT NAME:${nft['name']}",
+                                                  style: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                Text(
+                                                  "COLLECTION:${nft['collection']}",
+                                                  style: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                Text(
+                                                  "DESCRIPTION:${nft['description']}",
+                                                  style: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                spacer20,
+                                                Text(
+                                                  "OWNED:${index}",
+                                                  style: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                spacer20,
+                                                Text(
+                                                  "PRICE:${nft['currency']} ${nft['price']}",
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                spacer20,
+                                                const Text("HISTORY:",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 30)),
+                                                const Divider(),
+                                                ...List.generate(index,
+                                                    ((index) {
+                                                  return Text('Hello $index');
+                                                })),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  });
+                            },
+                            child: const Text("SHOW MORE")),
                         const SizedBox(
                           height: 20,
                         ),
                         DropdownButton(
-                          // Initial Value
-                          value: dropdownvalue,
-
-                          // Down Arrow Icon
-                          icon: const Icon(Icons.money),
-
-                          // Array list of items
-                          items: items.map((String items) {
-                            return DropdownMenuItem(
-                              value: items,
-                              child: Text(items),
-                            );
-                          }).toList(),
-                          // After selecting the desired option,it will
-                          // change button value to selected value
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              dropdownvalue = newValue!;
-                            });
-                          },
-                        ),
+                            value: currentCurrency,
+                            items: currency.map((e) {
+                              return DropdownMenuItem(
+                                value: e,
+                                child: Text(e),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              currentCurrency = value!;
+                              setState(() {});
+                            }),
                         spacer20,
                         TextFormField(
                           controller: pretController,
@@ -108,13 +188,18 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
 
                             return null;
                           },
+                          keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'[0-9]|.')),
+                          ],
                         ),
-                        const SizedBox(
-                          height: 20,
-                        ),
+                        spacer20,
                         OutlinedButton(
                           child: const Text("SELL"),
-                          onPressed: () {},
+                          onPressed: () {
+                            sellNft(nft);
+                          },
                         ),
                       ]),
                     ),
@@ -123,6 +208,100 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
               }),
             ),
           );
+  }
+
+  void sellNft(dynamic nft) async {
+    ref.read(globals.buyingNFT.notifier).update(((state) => true));
+
+    //BUY NFT===================
+    http.Response sellData = await http.post(
+      Uri.https(globals.domain, "/product/sell"),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        "id_user": globals.idCont,
+        "id_nft": nft['id'],
+        "currency": currentCurrency,
+        "price": double.parse(pretController.text)
+      }),
+    );
+
+    print(sellData.body);
+    var sellDataJson = jsonDecode(sellData.body);
+
+    if (sellDataJson['errors']?.isNotEmpty) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Center(
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 241, 241, 241),
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+                width: 500,
+                height: 600,
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const Text(
+                          "The following errors arosed:",
+                          style: TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                        ...List.generate(sellDataJson['errors'].length,
+                            (index) {
+                          return Text("- ${sellDataJson['errors'][index]}",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.red,
+                              ));
+                        })
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          });
+    } else {
+      dialog("SELL FOR ${nft['name']} COMPLETE!");
+    }
+    //BUY NFT===================
+  }
+
+  void dialog(String textDialog) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Center(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 241, 241, 241),
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
+              width: 500,
+              height: 600,
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Text(
+                        textDialog,
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
   }
 
   void showMore(dynamic nft) {

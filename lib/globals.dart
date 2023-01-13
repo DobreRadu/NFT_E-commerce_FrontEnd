@@ -13,6 +13,7 @@ String phone = '';
 String email = '';
 dynamic wallet = {};
 
+//{id: 5, name: dog, collection: animals, description: null, historyList: [], currency: eur, price: 50, picture:,,visible:true
 final nfts = StateProvider<List<dynamic>>((ref) => []);
 
 final ownedNfts = StateProvider<List<dynamic>>((ref) => []);

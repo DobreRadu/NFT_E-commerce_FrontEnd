@@ -26,8 +26,8 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
   TextEditingController expDateController = TextEditingController();
   TextEditingController ammountController = TextEditingController();
 
-  List<String> currency = ['eur', 'bitcoin,ron'];
-  int indexCurrency = 0;
+  List<String> currency = ['eur', 'bitcoin', 'ron'];
+  String currentCurrency = 'eur';
 
   final _formKey = GlobalKey<FormState>();
 
@@ -150,25 +150,52 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
                       ],
                     ),
                     space,
-                    TextFormField(
-                      controller: ammountController,
-                      obscureText: false,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Ammount',
-                      ),
-                      validator: (text) {
-                        if (text == null || text.isEmpty)
-                          return 'Ammount cannot be empty';
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            width: 75,
+                            height: 50,
+                            child: DropdownButton(
+                                value: currentCurrency,
+                                items: currency.map((e) {
+                                  return DropdownMenuItem(
+                                    value: e,
+                                    child: Text(e),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  currentCurrency = value!;
+                                  setState(() {});
+                                }),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 10,
+                          child: TextFormField(
+                            controller: ammountController,
+                            obscureText: false,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Ammount',
+                            ),
+                            validator: (text) {
+                              if (text == null || text.isEmpty)
+                                return 'Ammount cannot be empty';
 
-                        return null;
-                      },
-                      onFieldSubmitted: (value) async {
-                        addMoney();
-                      },
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
+                              return null;
+                            },
+                            onFieldSubmitted: (value) async {
+                              addMoney();
+                            },
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9]|.')),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                     space,
@@ -212,31 +239,33 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
     if (_formKey.currentState!.validate()) {
       processingData = true;
       setState(() {});
+      poor = false;
+      setState(() {});
 
       //ADD FUNDS===================
-      if (Random().nextBool()) {
-        try {
-          http.Response buyData = await http.post(
-            Uri.https(globals.domain, "/account/addFunds"),
-            headers: {
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-            body: jsonEncode({
-              "id_user": globals.idCont,
-              "currency": currency[indexCurrency],
-              "price": int.parse(ammountController.text)
-            }),
-          );
+      // if (Random().nextBool()) {
+      try {
+        http.Response buyData = await http.post(
+          Uri.https(globals.domain, "/account/addFunds"),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode({
+            "id_user": globals.idCont,
+            "currency": currentCurrency,
+            "price": double.parse(ammountController.text)
+          }),
+        );
 
-          print(buyData.body);
-        } catch (error) {
-          debugPrint(error.toString());
-        }
-        //ADD FUNDS===================
-      } else {
-        poor = true;
-        setState(() {});
+        print(buyData.body);
+      } catch (error) {
+        debugPrint(error.toString());
       }
+      //ADD FUNDS===================
+      // } else {
+      //   poor = true;
+      //   setState(() {});
+      // }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Data is wrong')),

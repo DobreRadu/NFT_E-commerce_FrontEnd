@@ -55,9 +55,15 @@ class _MyAccountPageState extends State<MyAccountPage> {
                       fontStyle: FontStyle.italic, fontSize: 20),
                 ),
                 space,
+                Text(
+                  "REGISTRATION DATE: ${globals.date}",
+                  style: const TextStyle(
+                      fontStyle: FontStyle.italic, fontSize: 20),
+                ),
+                space,
                 Row(
                   children: [
-                    const Text("WALLET:",
+                    const Text("WALLET: ",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 30)),
                     space,
@@ -75,12 +81,12 @@ class _MyAccountPageState extends State<MyAccountPage> {
                 const Divider(),
                 space,
                 Text(
-                  "EURO: ${globals.wallet['euro'] ?? 0}",
+                  "EURO: ${globals.wallet['eur'] ?? 0}",
                   style: const TextStyle(fontSize: 18),
                 ),
                 space,
                 Text(
-                  "LEI: ${globals.wallet['lei'] ?? 0}",
+                  "LEI: ${globals.wallet['ron'] ?? 0}",
                   style: const TextStyle(fontSize: 18),
                 ),
                 space,

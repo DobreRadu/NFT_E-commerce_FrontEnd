@@ -20,6 +20,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   TextEditingController passwordController = TextEditingController();
 
   bool processingData = false;
+  @override
+  void initState() {
+    super.initState();
+    emailController.text = "a@a.a";
+    passwordController.text = "parola123";
+  }
 
   final _formKey = GlobalKey<FormState>();
   @override
