@@ -71,9 +71,14 @@ class _MyAccountPageState extends State<MyAccountPage> {
                       child: const Text("ADD MONEY"),
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const AddMoneyPage()));
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const AddMoneyPage()))
+                            .then((_) {
+// Here you will get callback after coming back from NextPage()
+// Do your code here
+                          setState(() {});
+                        });
                       },
                     )
                   ],

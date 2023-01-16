@@ -228,8 +228,64 @@ class _RegisterPageState extends State<RegisterPage> {
                                           }),
                                         );
 
-                                        print(registerData.statusCode);
-                                        print(registerData.body);
+                                        var registerDataJson =
+                                            jsonDecode(registerData.body);
+
+                                        if (registerDataJson['errors']
+                                            ?.isNotEmpty) {
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return Center(
+                                                  child: Container(
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                      color: Color.fromARGB(
+                                                          255, 241, 241, 241),
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  20)),
+                                                    ),
+                                                    width: 500,
+                                                    height: 600,
+                                                    child: Center(
+                                                      child:
+                                                          SingleChildScrollView(
+                                                        child: Column(
+                                                          children: [
+                                                            const Text(
+                                                              "The following errors arosed:",
+                                                              style: TextStyle(
+                                                                fontSize: 14,
+                                                              ),
+                                                            ),
+                                                            ...List.generate(
+                                                                registerDataJson[
+                                                                        'errors']
+                                                                    .length,
+                                                                (index) {
+                                                              return Text(
+                                                                  "- ${registerDataJson['errors'][index]}",
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    fontSize:
+                                                                        14,
+                                                                    color: Colors
+                                                                        .red,
+                                                                  ));
+                                                            })
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              });
+                                        } else {
+                                          dialog("Register COMPLETE!");
+                                        }
+
                                         //REGISTER===================
                                       } catch (error) {
                                         debugPrint(error.toString());
@@ -250,5 +306,36 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
+  }
+
+  void dialog(String textDialog) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Center(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 241, 241, 241),
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
+              width: 500,
+              height: 600,
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Text(
+                        textDialog,
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
   }
 }

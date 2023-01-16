@@ -38,7 +38,6 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                     : 1,
         // Generate 100 widgets that display their index in the List.
         children: List.generate(ref.watch(globals.nfts).length, (index) {
-          if (!ref.read(globals.nfts)[index]['visible']) return Text('');
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Card(
@@ -71,6 +70,7 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                   OutlinedButton(
                       onPressed: () {
                         debugPrint("SHOW MORE SHOPPAGE");
+
                         showDialog(
                             context: context,
                             builder: (BuildContext context) {
@@ -116,13 +116,6 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                                           ),
                                           spacer20,
                                           Text(
-                                            "OWNED:${index}",
-                                            style: const TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          spacer20,
-                                          Text(
                                             "PRICE:${ref.read(globals.nfts)[index]['currency']} ${ref.read(globals.nfts)[index]['price']}",
                                             overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(
@@ -135,8 +128,13 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 30)),
                                           const Divider(),
-                                          ...List.generate(index, ((index) {
-                                            return Text('Hello $index');
+                                          ...List.generate(
+                                              ref
+                                                  .read(globals.nfts)[index]
+                                                      ['historyList']
+                                                  .length, ((index) {
+                                            return Text(
+                                                '-${ref.read(globals.nfts)[index]['historyList'][index]}');
                                           })),
                                         ],
                                       ),
@@ -151,14 +149,20 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                     height: 20,
                   ),
                   OutlinedButton(
-                      onPressed: (ref.watch(globals.buyingNFT))
+                      onPressed: (ref.watch(globals.buyingNFT) ||
+                              !ref.read(globals.nfts)[index]['visible'])
                           ? null
-                          : (nftOwned(index.toString()))
+                          : (nftOwned(ref
+                                  .read(globals.nfts)[index]['id']
+                                  .toString()))
                               ? null
                               : () {
-                                  buyNFT(index.toString());
+                                  buyNFT(ref
+                                      .read(globals.nfts)[index]['id']
+                                      .toString());
                                 },
-                      child: (nftOwned(index.toString()))
+                      child: (nftOwned(
+                              ref.read(globals.nfts)[index]['id'].toString()))
                           ? Wrap(
                               alignment: WrapAlignment.center,
                               crossAxisAlignment: WrapCrossAlignment.center,
@@ -170,7 +174,19 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                                 Text("OWNED"),
                               ],
                             )
-                          : const Text("BUY"))
+                          : (!ref.read(globals.nfts)[index]['visible'])
+                              ? Wrap(
+                                  alignment: WrapAlignment.center,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: const [
+                                    Icon(
+                                      Icons.crop_square_sharp,
+                                      color: Colors.red,
+                                    ),
+                                    Text("OWNED"),
+                                  ],
+                                )
+                              : const Text("BUY"))
                 ]),
               ),
             ),
@@ -182,14 +198,15 @@ class _ShopPageState extends ConsumerState<ShopPage> {
 
   bool nftOwned(String id) {
     for (var idNFT in ref.read(globals.ownedNfts)) {
-      if (id == idNFT) return true;
+      if (id == idNFT.toString()) return true;
     }
-
     return false;
   }
 
   void buyNFT(String id_nft) async {
     ref.read(globals.buyingNFT.notifier).update(((state) => true));
+
+    print(id_nft + " " + globals.idCont);
 
     //BUY NFT===================
     http.Response buyData = await http.post(
@@ -240,6 +257,23 @@ class _ShopPageState extends ConsumerState<ShopPage> {
             );
           });
     } else {
+      globals.wallet = buyDataJson['wallet'];
+
+      for (int i = 0; i < globals.wallet.keys.toList().length; i++) {
+        globals.wallet[globals.wallet.keys.toList()[i]] =
+            double.parse(globals.wallet[globals.wallet.keys.toList()[i]]);
+      }
+      ref
+          .read(globals.ownedNfts.notifier)
+          .update((state) => buyDataJson['nfts'] ?? "");
+
+      for (var i in ref.read(globals.nfts)) {
+        if (i['id'].toString() == id_nft.toString()) {
+          i['visible'] = false;
+        }
+      }
+
+      setState(() {});
       dialog("PRUCHASE COMPLETE!");
     }
     //BUY NFT===================

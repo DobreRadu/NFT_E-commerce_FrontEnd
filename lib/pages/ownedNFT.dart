@@ -42,7 +42,7 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
               children:
                   List.generate(ref.watch(globals.ownedNfts).length, (index) {
                 var nft = globals.findNftById(
-                    ref.read(globals.ownedNfts)[index], ref);
+                    ref.read(globals.ownedNfts)[index].toString(), ref);
 
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -63,7 +63,6 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
                         Text("COLLECTION:${nft['collection']}"),
                         Text("NFT NAME:${nft['name']}"),
                         Text("DESCRIPTION:${nft['description']}"),
-                        Text("OWNER:$index"),
                         Text(
                           "PRICE:${nft['currency']} ${nft['price']}",
                           overflow: TextOverflow.ellipsis,
@@ -124,14 +123,6 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
                                                 ),
                                                 spacer20,
                                                 Text(
-                                                  "OWNED:${index}",
-                                                  style: const TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                spacer20,
-                                                Text(
                                                   "PRICE:${nft['currency']} ${nft['price']}",
                                                   overflow:
                                                       TextOverflow.ellipsis,
@@ -147,9 +138,11 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
                                                             FontWeight.bold,
                                                         fontSize: 30)),
                                                 const Divider(),
-                                                ...List.generate(index,
-                                                    ((index) {
-                                                  return Text('Hello $index');
+                                                ...List.generate(
+                                                    nft[index]['historyList']
+                                                        .length, ((index) {
+                                                  return Text(
+                                                      '-${nft['historyList'][index]}');
                                                 })),
                                               ],
                                             ),
@@ -163,44 +156,46 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
                         const SizedBox(
                           height: 20,
                         ),
-                        DropdownButton(
-                            value: currentCurrency,
-                            items: currency.map((e) {
-                              return DropdownMenuItem(
-                                value: e,
-                                child: Text(e),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              currentCurrency = value!;
-                              setState(() {});
-                            }),
-                        spacer20,
-                        TextFormField(
-                          controller: pretController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Price',
-                          ),
-                          validator: (text) {
-                            if (text == null || text.isEmpty)
-                              return 'Price cannot be empty';
+                        if (!nft['visible'])
+                          DropdownButton(
+                              value: currentCurrency,
+                              items: currency.map((e) {
+                                return DropdownMenuItem(
+                                  value: e,
+                                  child: Text(e),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                currentCurrency = value!;
+                                setState(() {});
+                              }),
+                        if (!nft['visible'])
+                          TextFormField(
+                            controller: pretController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Price',
+                            ),
+                            validator: (text) {
+                              if (text == null || text.isEmpty)
+                                return 'Price cannot be empty';
 
-                            return null;
-                          },
-                          keyboardType: TextInputType.number,
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'[0-9]|.')),
-                          ],
-                        ),
+                              return null;
+                            },
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9]|.')),
+                            ],
+                          ),
                         spacer20,
-                        OutlinedButton(
-                          child: const Text("SELL"),
-                          onPressed: () {
-                            sellNft(nft);
-                          },
-                        ),
+                        if (!nft['visible'])
+                          OutlinedButton(
+                            child: const Text("SELL"),
+                            onPressed: () {
+                              sellNft(nft);
+                            },
+                          ),
                       ]),
                     ),
                   ),
@@ -269,7 +264,14 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
           });
     } else {
       dialog("SELL FOR ${nft['name']} COMPLETE!");
+      for (var i in ref.read(globals.nfts)) {
+        if (i['id'].toString() == nft['id'].toString()) {
+          i['visible'] = true;
+          setState(() {});
+        }
+      }
     }
+    ref.read(globals.buyingNFT.notifier).update(((state) => false));
     //BUY NFT===================
   }
 
@@ -291,9 +293,8 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
                     children: [
                       Text(
                         textDialog,
-                        style: const TextStyle(
-                          fontSize: 14,
-                        ),
+                        style:
+                            const TextStyle(fontSize: 14, color: Colors.black),
                       ),
                     ],
                   ),

@@ -243,7 +243,7 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
       setState(() {});
 
       //ADD FUNDS===================
-      // if (Random().nextBool()) {
+
       try {
         http.Response buyData = await http.post(
           Uri.https(globals.domain, "/account/addFunds"),
@@ -258,14 +258,21 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
         );
 
         print(buyData.body);
+
+        globals.wallet = jsonDecode(buyData.body)['wallet'];
+
+        for (int i = 0; i < globals.wallet.keys.toList().length; i++) {
+          globals.wallet[globals.wallet.keys.toList()[i]] =
+              double.parse(globals.wallet[globals.wallet.keys.toList()[i]]);
+        }
+        dialog("FUNDS ADDED");
+        setState(() {});
       } catch (error) {
+        dialog("ERROR OCCURED");
         debugPrint(error.toString());
       }
       //ADD FUNDS===================
-      // } else {
-      //   poor = true;
-      //   setState(() {});
-      // }
+
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Data is wrong')),
@@ -273,5 +280,36 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
     }
     processingData = false;
     setState(() {});
+  }
+
+  void dialog(String textDialog) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Center(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 241, 241, 241),
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
+              width: 500,
+              height: 600,
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Text(
+                        textDialog,
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
   }
 }

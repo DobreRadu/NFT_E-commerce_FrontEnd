@@ -25,7 +25,7 @@ final buyingNFT = StateProvider<bool>((ref) => false);
 
 dynamic findNftById(String id, WidgetRef ref) {
   for (var nft in ref.read(nfts)) {
-    if (nft['id'] == id) {
+    if (nft['id'].toString() == id.toString()) {
       return nft;
     }
   }
