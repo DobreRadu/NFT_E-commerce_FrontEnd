@@ -16,6 +16,7 @@ dependencies:
   url_strategy: ^0.2.0
   flutter_riverpod: ^2.1.1
   http: ^0.13.5
+  file_picker: ^5.2.5
 
 dev_dependencies:
   flutter_test:

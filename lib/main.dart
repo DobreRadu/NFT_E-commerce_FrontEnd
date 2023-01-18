@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
       },
-      title: 'NFT_COMMERCE',
+      title: 'ART_ECOMMERCE',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

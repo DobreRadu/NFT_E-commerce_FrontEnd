@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nftcommerce/globals.dart';
+import 'package:nftcommerce/pages/addNFT.dart';
 import 'package:nftcommerce/pages/myAccount.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nftcommerce/pages/ownedNFT.dart';
@@ -60,6 +61,15 @@ class _MainPageState extends ConsumerState<MainPage> {
                   ref
                       .read(mainPageView.notifier)
                       .update((state) => const OwnedPage());
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text("ADD NFT"),
+                onTap: () {
+                  ref
+                      .read(mainPageView.notifier)
+                      .update((state) => const AddNftPage());
                   Navigator.pop(context);
                 },
               ),
