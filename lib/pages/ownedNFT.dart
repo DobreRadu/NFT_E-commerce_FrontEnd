@@ -20,7 +20,7 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
     height: 20,
   );
 
-  TextEditingController pretController = TextEditingController();
+  List<TextEditingController> pretController = [];
 
   List<String> currency = ['eur', 'bitcoin', 'ron'];
   String currentCurrency = 'eur';
@@ -30,10 +30,10 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
     double widthContext = MediaQuery.of(context).size.width;
     double heightContext = MediaQuery.of(context).size.height;
     return (ref.read(globals.ownedNfts).isEmpty)
-        ? const Center(child: Text("YOU OWN NOTHING\nLETS GO BY SOME"))
+        ? const Center(child: Text("YOU OWN NOTHING\nLETS GO BUY SOME"))
         : Scaffold(
             body: GridView.count(
-              childAspectRatio: 0.6,
+              childAspectRatio: 0.8,
               crossAxisCount: (widthContext > 1400)
                   ? 3
                   : (widthContext > 1000)
@@ -43,6 +43,8 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
                   List.generate(ref.watch(globals.ownedNfts).length, (index) {
                 var nft = globals.findNftById(
                     ref.read(globals.ownedNfts)[index].toString(), ref);
+
+                pretController.add(TextEditingController());
 
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -79,8 +81,8 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
                                     return Center(
                                       child: Container(
                                         decoration: const BoxDecoration(
-                                          color: Color.fromARGB(
-                                              255, 241, 241, 241),
+                                          color:
+                                              Color.fromARGB(255, 61, 61, 61),
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(20)),
                                         ),
@@ -88,63 +90,68 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
                                         height: 600,
                                         child: Center(
                                           child: SingleChildScrollView(
-                                            child: Column(
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Image.memory(
-                                                    base64Decode(ref.read(
-                                                            globals.nfts)[index]
-                                                        ['picture']),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(10.0),
+                                              child: Column(
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Image.memory(
+                                                      base64Decode(
+                                                          nft['picture']),
+                                                    ),
                                                   ),
-                                                ),
-                                                spacer20,
-                                                Text(
-                                                  "NFT NAME:${nft['name']}",
-                                                  style: const TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Text(
-                                                  "COLLECTION:${nft['collection']}",
-                                                  style: const TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Text(
-                                                  "DESCRIPTION:${nft['description']}",
-                                                  style: const TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                spacer20,
-                                                Text(
-                                                  "PRICE:${nft['currency']} ${nft['price']}",
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: const TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                spacer20,
-                                                const Text("HISTORY:",
-                                                    style: TextStyle(
+                                                  spacer20,
+                                                  Text(
+                                                    "NFT NAME:${nft['name']}",
+                                                    style: const TextStyle(
+                                                        fontSize: 20,
                                                         fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 30)),
-                                                const Divider(),
-                                                ...List.generate(
-                                                    nft[index]['historyList']
-                                                        .length, ((index) {
-                                                  return Text(
-                                                      '-${nft['historyList'][index]}');
-                                                })),
-                                              ],
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                    "COLLECTION:${nft['collection']}",
+                                                    style: const TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                    "DESCRIPTION:${nft['description']}",
+                                                    style: const TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  spacer20,
+                                                  Text(
+                                                    "PRICE:${nft['currency']} ${nft['price']}",
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  spacer20,
+                                                  const Text("HISTORY:",
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 30)),
+                                                  const Divider(),
+                                                  ...List.generate(
+                                                      nft['historyList']
+                                                              .length ??
+                                                          0, ((indexHistory) {
+                                                    return Text(
+                                                        '+ ${nft['historyList'][indexHistory]['owner']} -> ${nft['historyList'][indexHistory]['currency']} ${nft['historyList'][indexHistory]['price']}');
+                                                  })),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -171,7 +178,7 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
                               }),
                         if (!nft['visible'])
                           TextFormField(
-                            controller: pretController,
+                            controller: pretController[index],
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Price',
@@ -193,7 +200,7 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
                           OutlinedButton(
                             child: const Text("SELL"),
                             onPressed: () {
-                              sellNft(nft);
+                              sellNft(nft, index);
                             },
                           ),
                       ]),
@@ -205,7 +212,7 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
           );
   }
 
-  void sellNft(dynamic nft) async {
+  void sellNft(dynamic nft, int index) async {
     ref.read(globals.buyingNFT.notifier).update(((state) => true));
 
     //BUY NFT===================
@@ -218,7 +225,7 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
         "id_user": globals.idCont,
         "id_nft": nft['id'],
         "currency": currentCurrency,
-        "price": double.parse(pretController.text)
+        "price": double.parse(pretController[index].text)
       }),
     );
 
@@ -232,7 +239,7 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
             return Center(
               child: Container(
                 decoration: const BoxDecoration(
-                  color: Color.fromARGB(255, 241, 241, 241),
+                  color: Color.fromARGB(255, 61, 61, 61),
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                 ),
                 width: 500,
@@ -266,6 +273,8 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
       dialog("SELL FOR ${nft['name']} COMPLETE!");
       for (var i in ref.read(globals.nfts)) {
         if (i['id'].toString() == nft['id'].toString()) {
+          i['currency'] = currentCurrency;
+          i['price'] = double.parse(pretController[index].text);
           i['visible'] = true;
           setState(() {});
         }
@@ -282,7 +291,7 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
           return Center(
             child: Container(
               decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 241, 241, 241),
+                color: Color.fromARGB(255, 61, 61, 61),
                 borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
               width: 500,
@@ -312,7 +321,7 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
           return Center(
             child: Container(
               decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 241, 241, 241),
+                color: Color.fromARGB(255, 61, 61, 61),
                 borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
               width: 500,
@@ -324,12 +333,6 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
                       Image.asset(
                         'assets/nftLogo.png',
                         alignment: Alignment.center,
-                      ),
-                      spacer20,
-                      Text(
-                        "OWNED:${nft['owner']}",
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       spacer20,
                       Text(

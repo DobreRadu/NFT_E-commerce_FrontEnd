@@ -38,7 +38,10 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 0, 70, 127),
+        title: Text("ADD MONEY PAGE"),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(80.0),
@@ -171,6 +174,7 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
                                 }),
                           ),
                         ),
+                        const Spacer(flex: 1),
                         Expanded(
                           flex: 10,
                           child: TextFormField(
@@ -289,7 +293,7 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
           return Center(
             child: Container(
               decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 241, 241, 241),
+                color: Color.fromARGB(255, 61, 61, 61),
                 borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
               width: 500,

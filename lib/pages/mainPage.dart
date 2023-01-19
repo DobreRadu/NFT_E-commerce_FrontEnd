@@ -99,6 +99,7 @@ class _MainPageState extends ConsumerState<MainPage> {
           ),
         ),
         appBar: AppBar(
+          backgroundColor: Color.fromARGB(255, 0, 70, 127),
           title: Text("Hello,${globals.firstName} ${globals.lastName}!"),
         ),
         body: ref.watch(mainPageView));

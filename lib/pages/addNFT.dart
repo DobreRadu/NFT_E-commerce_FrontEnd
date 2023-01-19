@@ -208,7 +208,7 @@ class _AddNftPageState extends ConsumerState<AddNftPage> {
 
       try {
         http.Response nftData = await http.post(
-          Uri.https(globals.domain, "/product/uploadNft"),
+          Uri.https(globals.domain, "/product/uploadNFT"),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
           },
@@ -227,14 +227,14 @@ class _AddNftPageState extends ConsumerState<AddNftPage> {
 
         var resultNFT = jsonDecode(nftData.body);
 
-        if (resultNFT['errors']?.isNotEmpty) {
+        if (resultNFT['id'] == null) {
           showDialog(
               context: context,
               builder: (BuildContext context) {
                 return Center(
                   child: Container(
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 241, 241, 241),
+                      color: Color.fromARGB(255, 61, 61, 61),
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                     ),
                     width: 500,
@@ -242,21 +242,18 @@ class _AddNftPageState extends ConsumerState<AddNftPage> {
                     child: Center(
                       child: SingleChildScrollView(
                         child: Column(
-                          children: [
-                            const Text(
+                          children: const [
+                            Text(
                               "The following errors arosed:",
                               style: TextStyle(
                                 fontSize: 14,
                               ),
                             ),
-                            ...List.generate(resultNFT['errors'].length,
-                                (index) {
-                              return Text("- ${resultNFT['errors'][index]}",
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.red,
-                                  ));
-                            })
+                            Text("We couldn't upload the image!",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.red,
+                                ))
                           ],
                         ),
                       ),
@@ -294,7 +291,7 @@ class _AddNftPageState extends ConsumerState<AddNftPage> {
           return Center(
             child: Container(
               decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 241, 241, 241),
+                color: Color.fromARGB(255, 61, 61, 61),
                 borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
               width: 500,

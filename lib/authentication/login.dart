@@ -23,8 +23,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   void initState() {
     super.initState();
-    emailController.text = "a@a.a";
-    passwordController.text = "parola123";
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -32,6 +30,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 0, 70, 127),
         title: Text("LOGIN PAGE"),
       ),
       body: Form(
@@ -39,92 +38,88 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         child: Center(
           child: SizedBox(
             width: 600,
-            child: Container(
-              color: Colors.white70,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/nftLogo.png',
-                      alignment: Alignment.center,
-                      width: 400,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/nftLogo.png',
+                    alignment: Alignment.center,
+                    width: 400,
+                  ),
+                  const Text(
+                    "LOGIN",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  TextFormField(
+                    controller: emailController,
+                    obscureText: false,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Email',
                     ),
-                    const Text(
-                      "LOGIN",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      controller: emailController,
-                      obscureText: false,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Email',
-                      ),
-                      validator: (text) {
-                        if (text == null || text.isEmpty)
-                          return 'Email cannot be empty';
-                        if (!RegExp(
-                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                            .hasMatch(text)) return "Email is invalid";
+                    validator: (text) {
+                      if (text == null || text.isEmpty)
+                        return 'Email cannot be empty';
+                      if (!RegExp(
+                              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                          .hasMatch(text)) return "Email is invalid";
 
-                        return null;
-                      },
-                      onFieldSubmitted: (value) async {
-                        login(ref);
-                      },
+                      return null;
+                    },
+                    onFieldSubmitted: (value) async {
+                      login(ref);
+                    },
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  TextFormField(
+                    controller: passwordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Password',
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Password',
-                      ),
-                      validator: (text) {
-                        if (text == null || text.isEmpty)
-                          return 'Password cannot be empty';
-                        if (text.length < 8)
-                          return "Password has to have atleast 8 characters!";
+                    validator: (text) {
+                      if (text == null || text.isEmpty)
+                        return 'Password cannot be empty';
+                      if (text.length < 8)
+                        return "Password has to have atleast 8 characters!";
 
-                        return null;
-                      },
-                      onFieldSubmitted: (value) async {
-                        login(ref);
-                      },
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        OutlinedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const RegisterPage()));
-                            },
-                            child: Text("Register NOW")),
-                        Spacer(),
-                        OutlinedButton(
-                            onPressed: () {
-                              login(ref);
-                            },
-                            child: Text("LOGIN"))
-                      ],
-                    ),
-                  ],
-                ),
+                      return null;
+                    },
+                    onFieldSubmitted: (value) async {
+                      login(ref);
+                    },
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      OutlinedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const RegisterPage()));
+                          },
+                          child: Text("Register NOW")),
+                      Spacer(),
+                      OutlinedButton(
+                          onPressed: () {
+                            login(ref);
+                          },
+                          child: Text("LOGIN"))
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
@@ -173,7 +168,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               return Center(
                 child: Container(
                   decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 241, 241, 241),
+                    color: Color.fromARGB(255, 61, 61, 61),
                     borderRadius: BorderRadius.all(Radius.circular(20)),
                   ),
                   width: 500,
@@ -247,7 +242,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           return Center(
             child: Container(
               decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 241, 241, 241),
+                color: Color.fromARGB(255, 61, 61, 61),
                 borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
               width: 500,
