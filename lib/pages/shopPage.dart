@@ -49,7 +49,7 @@ class _ShopPageState extends ConsumerState<ShopPage> {
           Divider(),
           Expanded(
             child: GridView.count(
-              childAspectRatio: 0.9,
+              childAspectRatio: 0.8,
               // Create a grid with 2 columns. If you change the scrollDirection to
               // horizontal, this produces 2 rows.
               crossAxisCount: (widthContext > 1200)
