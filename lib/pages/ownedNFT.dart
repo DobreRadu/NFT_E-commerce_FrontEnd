@@ -303,7 +303,7 @@ class _ShopPageState extends ConsumerState<OwnedPage> {
                       Text(
                         textDialog,
                         style:
-                            const TextStyle(fontSize: 14, color: Colors.black),
+                            const TextStyle(fontSize: 14, color: Colors.white),
                       ),
                     ],
                   ),
